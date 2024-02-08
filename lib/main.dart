@@ -1,3 +1,4 @@
+import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/firebase_options.dart';
 import 'package:demo_app/view/home/home_screen.dart';
 import 'package:demo_app/view/navigator_screen.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: PageViewScreen(),
+      home: SignInScreen(),
     );
   }
 }
