@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class GlobleText extends StatelessWidget {
   final String text;
   String? fontFamily;
@@ -12,7 +13,6 @@ class GlobleText extends StatelessWidget {
       style: TextStyle(
         fontWeight: FontWeight.w500,
         color: color ?? Colors.red,
-
         fontFamily: fontFamily ?? 'Roboto',
       ),
     );

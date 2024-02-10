@@ -1,8 +1,7 @@
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/firebase_options.dart';
 import 'package:demo_app/view/home/home_screen.dart';
-import 'package:demo_app/view/navigator_screen.dart';
-import 'package:demo_app/view/page_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -19,12 +18,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SignInScreen(),
+      home: (FirebaseAuth.instance.currentUser != null)
+          ? HomeScreen()
+          : SignInScreen(),
     );
   }
 }

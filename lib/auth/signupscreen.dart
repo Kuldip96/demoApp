@@ -75,7 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             onPressed: () {
               creatAccount();
             },
-            child: const Text('Login'),
+            child: const Text('Sign Up'),
           ),
         ],
       ),
