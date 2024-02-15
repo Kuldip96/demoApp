@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:demo_app/auth/signupscreen.dart';
 import 'package:demo_app/view/home/home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -17,25 +18,56 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController password = TextEditingController();
 
-  void login() async {
-    String email = emailController.text.trim();
-    String passwor = password.text.trim();
+  // void login() async {
+  //   String email = emailController.text.trim();
+  //   String passwor = password.text.trim();
 
-    if (email == '' || passwor == '') {
-      log('Please fill in the detail');
-    } else {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: passwor);
-        log('user created');
-        if (userCredential.user != null) {
-          Navigator.popUntil(context, (route) => route.isFirst);
-          Navigator.pushReplacement(
-              context, CupertinoPageRoute(builder: (context) => HomeScreen()));
-        }
-      } on FirebaseAuthException catch (e) {
-        log(e.code.toString());
+  //   if (email == '' || passwor == '') {
+  //     log('Please fill in the detail');
+  //   } else {
+  //     try {
+  //       UserCredential userCredential = await FirebaseAuth.instance
+  //           .signInWithEmailAndPassword(email: email, password: passwor);
+  //       log('user created');
+  //       if (userCredential.user != null) {
+  //         Navigator.popUntil(context, (route) => route.isFirst);
+  //         Navigator.pushReplacement(
+  //             context, CupertinoPageRoute(builder: (context) => HomeScreen()));
+  //       }
+  //     } on FirebaseAuthException catch (e) {
+  //       log(e.code.toString());
+  //     }
+  //   }
+  // }
+  Future<void> login(String email, String password) async {
+    print(email);
+    print(password);
+    try {
+      http.Response response = await http.post(
+        Uri.parse('https://typescript-al0m.onrender.com/api/user/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      print(response.statusCode.toString());
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var data = jsonDecode(response.body);
+
+        print(data['messge']);
+        log('login!!');
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+      } else {
+        print('Fail');
       }
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -65,7 +97,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              login();
+              login(emailController.text, password.text);
             },
             child: const Text('Login'),
           ),
