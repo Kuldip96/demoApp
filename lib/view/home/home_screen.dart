@@ -18,11 +18,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   void logOut() async {
     await FirebaseAuth.instance.signOut();
-    if (mounted) {
+    
       Navigator.popUntil(context, (route) => route.isFirst);
       Navigator.pushReplacement(context,
           CupertinoPageRoute(builder: (context) => const SignInScreen()));
-    }
+   
   }
 
   @override
