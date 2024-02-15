@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:demo_app/auth/signupscreen.dart';
 import 'package:demo_app/view/home/home_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -30,6 +30,7 @@ class _SignInScreenState extends State<SignInScreen> {
   //           .signInWithEmailAndPassword(email: email, password: passwor);
   //       log('user created');
   //       if (userCredential.user != null) {
+
   //         Navigator.popUntil(context, (route) => route.isFirst);
   //         Navigator.pushReplacement(
   //             context, CupertinoPageRoute(builder: (context) => HomeScreen()));
@@ -45,7 +46,7 @@ class _SignInScreenState extends State<SignInScreen> {
     try {
       http.Response response = await http.post(
         Uri.parse('https://typescript-al0m.onrender.com/api/user/login'),
-        headers: <String, String>{
+        headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
@@ -54,20 +55,23 @@ class _SignInScreenState extends State<SignInScreen> {
         }),
       );
 
-      print(response.statusCode.toString());
-
+      log(response.statusCode.toString());
+      var data = jsonDecode(response.body);
+      log(data['message']);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        var data = jsonDecode(response.body);
-
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            (route) => false);
         log(data['token']);
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', data['token']);
         log('login!!');
-        Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
       } else {
-        print('Fail');
+        log('Fail!');
       }
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
     }
   }
 
@@ -102,15 +106,16 @@ class _SignInScreenState extends State<SignInScreen> {
             child: const Text('Login'),
           ),
           OutlinedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const SignUpScreen(),
-                  ),
-                );
-              },
-              child: const Text('Register'))
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SignUpScreen(),
+                ),
+              );
+            },
+            child: const Text('Register'),
+          ),
         ],
       ),
     );

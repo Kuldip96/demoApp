@@ -1,6 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       http.Response response = await http.post(
         Uri.parse('https://typescript-al0m.onrender.com/api/user/signUp'),
-        headers: <String, String>{
+        headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
@@ -35,21 +36,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }),
       );
 
-      print(response.statusCode.toString());
+      log(response.statusCode.toString());
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var data = jsonDecode(response.body);
 
         log(data['messge']);
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => SignInScreen()),
-            (route) => false);
+        log("User sing in");
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (_) => const SignInScreen()),
+        //     (route) => false);
       } else {
-        print('Fail');
+        log('fail!');
       }
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
     }
   }
   // void creatAccount() async {
