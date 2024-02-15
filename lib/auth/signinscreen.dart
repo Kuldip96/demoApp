@@ -59,7 +59,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         var data = jsonDecode(response.body);
 
-        print(data['messge']);
+        log(data['token']);
         log('login!!');
         Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);

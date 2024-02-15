@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         var data = jsonDecode(response.body);
 
-        print(data['messge']);
+        log(data['messge']);
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => SignInScreen()),
