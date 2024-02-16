@@ -41,8 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
   //   }
   // }
   Future<void> login(String email, String password) async {
-    print(email);
-    print(password);
+   
     try {
       http.Response response = await http.post(
         Uri.parse('https://typescript-al0m.onrender.com/api/user/login'),

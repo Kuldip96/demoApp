@@ -18,10 +18,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController password = TextEditingController();
   TextEditingController cpassword = TextEditingController();
   TextEditingController nameContoll = TextEditingController();
+
   Future<void> login(String email, String password, String name) async {
-    print(email);
-    print(password);
-    print(name);
     try {
       http.Response response = await http.post(
         Uri.parse('https://typescript-al0m.onrender.com/api/user/signUp'),
@@ -40,13 +38,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var data = jsonDecode(response.body);
-
-        log(data['messge']);
-        log("User sing in");
-        // Navigator.pushAndRemoveUntil(
-        //     context,
-        //     MaterialPageRoute(builder: (_) => const SignInScreen()),
-        //     (route) => false);
+        log('Sign in!');
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const SignInScreen()),
+            (route) => false);
       } else {
         log('fail!');
       }
@@ -54,6 +50,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       log(e.toString());
     }
   }
+
   // void creatAccount() async {
   //   String email = emailController.text.trim();
   //   String passwor = password.text.trim();
