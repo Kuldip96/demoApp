@@ -15,26 +15,33 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  String? token1;
+  HomeScreen({super.key, this.token1});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String? tokeeen;
   @override
   void initState() {
-    getToken();
-   
+    setState(() {
+      getToken();
+    });
+    tokeeen = widget.token1;
     super.initState();
   }
-  String Token="";
-  Future getToken()async{
-     final SharedPreferences prefs = await SharedPreferences.getInstance();
-   Token= prefs.getString('token')!;
-    fetchAlbum();
-   log("Token $Token");
+
+  String Token = "";
+  void getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final Token = prefs.getString('token');
+    log("tokeeen ${Token!}");
+    // userGet(Token);
   }
+
   void logOut() async {
     await FirebaseAuth.instance.signOut();
 
@@ -43,26 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         CupertinoPageRoute(builder: (context) => const SignInScreen()));
   }
 
-  Future<ShowProduct> fetchAlbum() async {
-    log(Token);
-    final response = await http.get(
-      Uri.parse(
-          'https://typescript-al0m.onrender.com/api/user/product/showall-product'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $Token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return ShowProduct.fromJson(
-          jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to load album');
-    }
-  }
-
-   Future<ShowProduct>? futureData;
+  List<ProductGet> futureData = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,81 +65,106 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               logOut();
             },
-            icon: Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app),
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: FutureBuilder<ShowProduct>(
-            future: futureData,
+        child: FutureBuilder<ProductGet?>(
+            future: userGet(tokeeen ?? ""),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Column(
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => SecondScren(
-                                            image: "images/Rectangle 391.png",
-                                          )));
-                            },
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: AppColor.primeryColor,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  bottomLeft: Radius.circular(10),
-                                ),
-                              ),
-                              child: Center(
-                                child: GlobleText(
-                                  text: AppText.name,
-                                  // color: Colors.amber,
-                                ),
-                              ),
-                            ),
-                          ),
+                return ListView.builder(
+                    itemCount: futureData.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: Column(
+                          children: [
+                            Text(snapshot.data?.productName ?? "dwe"),
+                          ],
                         ),
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: AppColor.darkColor,
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(AppText.name),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    GlobleButton(onTap: () {}),
-                    Container(
-                        height: 50,
-                        child: ElevatedButton(
-                            onPressed: () {}, child: Text('data')))
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
+                      );
+                    });
+              } else {
+                return Center(child: const CircularProgressIndicator());
               }
-              return CircularProgressIndicator();
             }),
       ),
     );
   }
+
+  Future<ProductGet?> userGet(String token) async {
+    try {
+      http.Response response = await http.get(
+        Uri.parse(
+            'https://typescript-al0m.onrender.com/api/user/product/showall-product'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print(response.statusCode);
+      var data = jsonDecode(response.body);
+      print(data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (data is List) {
+          List<ProductGet> products = [];
+          for (var item in data) {
+            print(item);
+            futureData.add(ProductGet.fromJson(item));
+            products.add(ProductGet.fromJson(item));
+          }
+          return products.isNotEmpty
+              ? futureData.first
+              : null; // Return the first product or null if the list is empty
+        } else {
+          print('Unexpected data format: $data');
+          return null;
+        }
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  // Future<ProductGet?> userGet(String token) async {
+  //   try {
+  //     http.Response response = await http.get(
+  //       Uri.parse(
+  //           'https://typescript-al0m.onrender.com/api/user/product/showall-product'),
+  //       headers: {
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //         'Authorization': 'Bearer $token',
+  //       },
+  //     );
+
+  //     print(response.statusCode);
+  //     var data = jsonDecode(response.body);
+  //     print(data);
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       if (data is List) {
+  //         for (var item in data) {
+  //           print(item);
+  //           futureData?.add(jsonDecode(response.body));
+  //           return ProductGet.fromJson(item);
+  //         }
+  //       } else {
+  //         print('Unexpected data format: $data');
+  //         return null;
+  //       }
+  //     } else {
+  //       print('Request failed with status: ${response.statusCode}');
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     return null;
+  //   }
+  // }
 }

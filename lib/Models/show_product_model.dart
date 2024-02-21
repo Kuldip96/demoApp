@@ -1,4 +1,4 @@
-class ShowProduct {
+class ProductGet {
   String? sId;
   String? admin;
   List<String>? productImage;
@@ -8,7 +8,7 @@ class ShowProduct {
   bool? isDelete;
   int? iV;
 
-  ShowProduct(
+  ProductGet(
       {this.sId,
       this.admin,
       this.productImage,
@@ -18,7 +18,7 @@ class ShowProduct {
       this.isDelete,
       this.iV});
 
-  ShowProduct.fromJson(Map<String, dynamic> json) {
+  ProductGet.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     admin = json['admin'];
     productImage = json['productImage'].cast<String>();

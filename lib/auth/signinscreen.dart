@@ -41,7 +41,6 @@ class _SignInScreenState extends State<SignInScreen> {
   //   }
   // }
   Future<void> login(String email, String password) async {
-   
     try {
       http.Response response = await http.post(
         Uri.parse('https://typescript-al0m.onrender.com/api/user/login'),
@@ -58,14 +57,18 @@ class _SignInScreenState extends State<SignInScreen> {
       var data = jsonDecode(response.body);
       log(data['message']);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (route) => false);
         log(data['token']);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', data['token']);
+         final Token =prefs.getString('token');
         log('login!!');
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (_) => HomeScreen(
+                      token1: Token,
+                    )),
+            (route) => false);
       } else {
         log('Fail!');
       }
