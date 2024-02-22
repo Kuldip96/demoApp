@@ -3,11 +3,7 @@ import 'dart:developer';
 
 import 'package:demo_app/Models/show_product_model.dart';
 import 'package:demo_app/auth/signinscreen.dart';
-import 'package:demo_app/utils/comman/app_botton.dart';
-import 'package:demo_app/utils/comman/app_color.dart';
-import 'package:demo_app/utils/comman/app_text.dart';
 import 'package:demo_app/utils/comman/comman_text.dart';
-import 'package:demo_app/view/home/second_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,30 +67,34 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: FutureBuilder<ProductGet?>(
-            future: userGet(tokeeen ?? ""),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    itemCount: futureData.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: Column(
-                          children: [
-                            Text(snapshot.data?.productName ?? "dwe"),
-                          ],
-                        ),
-                      );
-                    });
-              } else {
-                return Center(child: const CircularProgressIndicator());
-              }
-            }),
+        child: FutureBuilder<List<ProductGet>>(
+          future: userGet(tokeeen ?? ""),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data?.length ?? 0,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: Column(
+                      children: [
+                        Text(snapshot.data?[index].productName ?? "N/A"),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }
 
-  Future<ProductGet?> userGet(String token) async {
+  Future<List<ProductGet>> userGet(String token) async {
     try {
       http.Response response = await http.get(
         Uri.parse(
@@ -113,58 +113,23 @@ class _HomeScreenState extends State<HomeScreen> {
           List<ProductGet> products = [];
           for (var item in data) {
             print(item);
-            futureData.add(ProductGet.fromJson(item));
             products.add(ProductGet.fromJson(item));
           }
-          return products.isNotEmpty
-              ? futureData.first
-              : null; // Return the first product or null if the list is empty
+          setState(() {
+            futureData = products;
+          });
+          return products;
         } else {
           print('Unexpected data format: $data');
-          return null;
+          throw 'Unexpected data format: $data';
         }
       } else {
         print('Request failed with status: ${response.statusCode}');
-        return null;
+        throw 'Request failed with status: ${response.statusCode}';
       }
     } catch (e) {
       print('Error: $e');
-      return null;
+      throw 'Error: $e';
     }
   }
-
-  // Future<ProductGet?> userGet(String token) async {
-  //   try {
-  //     http.Response response = await http.get(
-  //       Uri.parse(
-  //           'https://typescript-al0m.onrender.com/api/user/product/showall-product'),
-  //       headers: {
-  //         'Content-Type': 'application/json; charset=UTF-8',
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //     );
-
-  //     print(response.statusCode);
-  //     var data = jsonDecode(response.body);
-  //     print(data);
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       if (data is List) {
-  //         for (var item in data) {
-  //           print(item);
-  //           futureData?.add(jsonDecode(response.body));
-  //           return ProductGet.fromJson(item);
-  //         }
-  //       } else {
-  //         print('Unexpected data format: $data');
-  //         return null;
-  //       }
-  //     } else {
-  //       print('Request failed with status: ${response.statusCode}');
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     return null;
-  //   }
-  // }
 }
