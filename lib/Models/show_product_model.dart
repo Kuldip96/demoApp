@@ -1,44 +1,101 @@
-class ProductGet {
-  String? sId;
-  String? admin;
-  List<String>? productImage;
-  String? productName;
-  String? role;
-  int? productPrice;
-  bool? isDelete;
-  int? iV;
+class TmdbModel {
+  Collection? collection;
 
-  ProductGet(
-      {this.sId,
-      this.admin,
-      this.productImage,
-      this.productName,
-      this.role,
-      this.productPrice,
-      this.isDelete,
-      this.iV});
+  TmdbModel({
+    this.collection,
+  });
+}
 
-  ProductGet.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    admin = json['admin'];
-    productImage = json['productImage'].cast<String>();
-    productName = json['productName'];
-    role = json['role'];
-    productPrice = json['productPrice'];
-    isDelete = json['isDelete'];
-    iV = json['__v'];
-  }
+class Collection {
+  Info? info;
+  List<Item>? item;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['admin'] = this.admin;
-    data['productImage'] = this.productImage;
-    data['productName'] = this.productName;
-    data['role'] = this.role;
-    data['productPrice'] = this.productPrice;
-    data['isDelete'] = this.isDelete;
-    data['__v'] = this.iV;
-    return data;
-  }
+  Collection({
+    this.info,
+    this.item,
+  });
+}
+
+class Info {
+  String? postmanId;
+  String? name;
+  String? schema;
+  DateTime? updatedAt;
+  String? uid;
+  dynamic createdAt;
+  dynamic lastUpdatedBy;
+
+  Info({
+    this.postmanId,
+    this.name,
+    this.schema,
+    this.updatedAt,
+    this.uid,
+    this.createdAt,
+    this.lastUpdatedBy,
+  });
+}
+
+class Item {
+  String? name;
+  String? id;
+  ProtocolProfileBehavior? protocolProfileBehavior;
+  Request? request;
+  List<dynamic>? response;
+  String? uid;
+
+  Item({
+    this.name,
+    this.id,
+    this.protocolProfileBehavior,
+    this.request,
+    this.response,
+    this.uid,
+  });
+}
+
+class ProtocolProfileBehavior {
+  bool? disableBodyPruning;
+
+  ProtocolProfileBehavior({
+    this.disableBodyPruning,
+  });
+}
+
+class Request {
+  String? method;
+  List<dynamic>? header;
+  Url? url;
+
+  Request({
+    this.method,
+    this.header,
+    this.url,
+  });
+}
+
+class Url {
+  String? raw;
+  String? protocol;
+  List<String>? host;
+  List<String>? path;
+  List<Query>? query;
+
+  Url({
+    this.raw,
+    this.protocol,
+    this.host,
+    this.path,
+    this.query,
+  });
+}
+
+class Query {
+  String? key;
+  String? value;
+
+  Query({
+    this.key,
+    this.value,
+  });
 }
