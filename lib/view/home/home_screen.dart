@@ -12,29 +12,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   String? token1;
-  HomeScreen({super.key, this.token1});
+  HomeScreen({Key? key, this.token1}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? tokeeen;
-  Future<List<TmdbModel>>? movie;
+  List<FackData> data = [];
+
   @override
   void initState() {
-    movie = _fetchData();
-    tokeeen = widget.token1;
     super.initState();
-  }
-
-  String Token = "";
-  void getToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final Token = prefs.getString('token');
-    log("tokeeen ${Token!}");
-    // userGet(Token);
+    fetchData(widget.token1 ?? "");
   }
 
   void logOut() async {
@@ -63,39 +53,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: movie,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            final movieeee = snapshot.data;
-            return ListView.builder(
-              itemCount: movieeee?.length,
-              itemBuilder: (context, index) {
-                final data = movieeee?[index];
-                return ListTile(
-                  // title: Text(key),
-                  subtitle: Text(data?.collection?.item?[index].name ?? "dw"),
-                );
-              },
-            );
-          }
+      body: ListView.builder(
+        itemCount: data.length ?? 1,
+        itemBuilder: (context, index) {
+          final item = data[index];
+          return ListTile(
+            title: Text("ID: ${item.data?[index].id ?? "dfe"}"),
+            subtitle: Text("Name: ${item.data?[index].email ?? "ed"}"),
+          );
         },
       ),
     );
   }
 
-  Future<List<TmdbModel>> _fetchData() async {
-    final response = await http.get(Uri.parse(
-        'https://api.postman.com/collections/28250023-429979bf-5000-4f03-a37b-24f833fcb9ad?access_key=PMAT-01HFR95CTR0JXXS7G3S5P5E8WV'));
+  Future<void> fetchData(String token) async {
+    final response = await http.get(
+      Uri.parse('http://restapi.adequateshop.com/api/users'),
+      headers: {'Authorization': 'Bearer $token'}, // Pass token in headers
+    );
 
     if (response.statusCode == 200) {
-      final List<TmdbModel> data = json.decode(response.body)['collection'];
+      var jsonData = json.decode(response.body);
+      List<FackData> fetchedData = [];
 
-      return data;
+      for (var item in jsonData) {
+        fetchedData.add(FackData.fromJson(item));
+      }
+
+      setState(() {
+        data = fetchedData;
+      });
     } else {
       throw Exception('Failed to load data');
     }

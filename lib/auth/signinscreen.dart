@@ -43,7 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> login(String email, String password) async {
     try {
       http.Response response = await http.post(
-        Uri.parse('https://typescript-al0m.onrender.com/api/user/login'),
+        Uri.parse('http://restapi.adequateshop.com/api/authaccount/login'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -55,12 +55,12 @@ class _SignInScreenState extends State<SignInScreen> {
 
       log(response.statusCode.toString());
       var data = jsonDecode(response.body);
-      log(data['message']);
+      //log(data['message']);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        log(data['token']);
+        //log(data['token']);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', data['token']);
-         final Token =prefs.getString('token');
+        prefs.setString('token', data['data']['Token']);
+        final Token = prefs.getString('token');
         log('login!!');
         Navigator.pushAndRemoveUntil(
             context,
@@ -76,6 +76,42 @@ class _SignInScreenState extends State<SignInScreen> {
       log(e.toString());
     }
   }
+  // Future<void> login(String email, String password) async {
+  //   try {
+  //     http.Response response = await http.post(
+  //       Uri.parse('https://typescript-al0m.onrender.com/api/user/login'),
+  //       headers: {
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: jsonEncode({
+  //         'email': email,
+  //         'password': password,
+  //       }),
+  //     );
+
+  //     log(response.statusCode.toString());
+  //     var data = jsonDecode(response.body);
+  //     log(data['message']);
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       log(data['token']);
+  //       final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       prefs.setString('token', data['token']);
+  //        final Token =prefs.getString('token');
+  //       log('login!!');
+  //       Navigator.pushAndRemoveUntil(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (_) => HomeScreen(
+  //                     token1: Token,
+  //                   )),
+  //           (route) => false);
+  //     } else {
+  //       log('Fail!');
+  //     }
+  //   } catch (e) {
+  //     log(e.toString());
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
