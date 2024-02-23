@@ -20,11 +20,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? tokeeen;
+  Future<List<TmdbModel>>? movie;
   @override
   void initState() {
-    setState(() {
-      getToken();
-    });
+    movie = _fetchData();
     tokeeen = widget.token1;
     super.initState();
   }
@@ -46,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
         CupertinoPageRoute(builder: (context) => const SignInScreen()));
   }
 
-  List<ProductGet> futureData = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,71 +63,41 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: FutureBuilder<List<ProductGet>>(
-          future: userGet(tokeeen ?? ""),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: Column(
-                      children: [
-                        Text(snapshot.data?[index].productName ?? "N/A"),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }
-          },
-        ),
+      body: FutureBuilder(
+        future: movie,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final movieeee = snapshot.data;
+            return ListView.builder(
+              itemCount: movieeee?.length,
+              itemBuilder: (context, index) {
+                final data = movieeee?[index];
+                return ListTile(
+                  // title: Text(key),
+                  subtitle: Text(data?.collection?.item?[index].name ?? "dw"),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
 
-  Future<List<ProductGet>> userGet(String token) async {
-    try {
-      http.Response response = await http.get(
-        Uri.parse(
-            'https://typescript-al0m.onrender.com/api/user/product/showall-product'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
+  Future<List<TmdbModel>> _fetchData() async {
+    final response = await http.get(Uri.parse(
+        'https://api.postman.com/collections/28250023-429979bf-5000-4f03-a37b-24f833fcb9ad?access_key=PMAT-01HFR95CTR0JXXS7G3S5P5E8WV'));
 
-      print(response.statusCode);
-      var data = jsonDecode(response.body);
-      print(data);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (data is List) {
-          List<ProductGet> products = [];
-          for (var item in data) {
-            print(item);
-            products.add(ProductGet.fromJson(item));
-          }
-          setState(() {
-            futureData = products;
-          });
-          return products;
-        } else {
-          print('Unexpected data format: $data');
-          throw 'Unexpected data format: $data';
-        }
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-        throw 'Request failed with status: ${response.statusCode}';
-      }
-    } catch (e) {
-      print('Error: $e');
-      throw 'Error: $e';
+    if (response.statusCode == 200) {
+      final List<TmdbModel> data = json.decode(response.body)['collection'];
+
+      return data;
+    } else {
+      throw Exception('Failed to load data');
     }
   }
 }
