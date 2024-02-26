@@ -4,6 +4,7 @@ import 'package:demo_app/api.dart';
 import 'package:demo_app/apicall.dart';
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/firebase_options.dart';
+import 'package:demo_app/getprofile.dart';
 import 'package:demo_app/view/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -48,7 +49,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: token != null ? EmployeeList() : const SignInScreen(),
+      home: token != null ? GetProfileScreen() : const SignInScreen(),
       //home: EmployeeList(),
     );
   }
