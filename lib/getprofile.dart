@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetProfileScreen extends StatefulWidget {
+  const GetProfileScreen({super.key});
+
   @override
   _GetProfileScreenState createState() => _GetProfileScreenState();
 }
@@ -15,6 +17,7 @@ class GetProfileScreen extends StatefulWidget {
 class _GetProfileScreenState extends State<GetProfileScreen> {
   Future<GetProfile>? futureProfile;
   String? Token;
+  String? name;
   @override
   void initState() {
     futureProfile = fetchProfile();
@@ -30,8 +33,11 @@ class _GetProfileScreenState extends State<GetProfileScreen> {
       Uri.parse('https://typescript-al0m.onrender.com/api/user/get-profile'),
       headers: {'Authorization': 'Bearer $Token'},
     );
-
+    final data = jsonDecode(response.body);
+    name = data['name'];
+    log(name.toString());
     if (response.statusCode == 200) {
+      log(response.body);
       return GetProfile.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load profile');
@@ -64,10 +70,16 @@ class _GetProfileScreenState extends State<GetProfileScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => UpdateProfile()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpdateProfile(
+                      name: name!,
+                    ),
+                  ),
+                );
               },
-              child: Text("Update Profile"),
+              child: const Text("Update Profile"),
             ),
           ],
         ),

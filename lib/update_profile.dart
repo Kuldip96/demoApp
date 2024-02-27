@@ -1,13 +1,14 @@
 import 'dart:developer';
-
-import 'package:demo_app/Models/profile_get.dart';
+import 'package:demo_app/getprofile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateProfile extends StatefulWidget {
+  final String name;
+  const UpdateProfile({super.key, required this.name});
+
   @override
   _UpdateProfileState createState() => _UpdateProfileState();
 }
@@ -17,58 +18,51 @@ class _UpdateProfileState extends State<UpdateProfile> {
   String? Token;
   @override
   void initState() {
+    nameController.text = widget.name;
     super.initState();
   }
 
-  // Future<void> fetchProfile(String name) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   Token = prefs.getString('token');
-  //   log(name);
-  //   log(Token.toString());
-  //   final response = await http.put(
-  //       Uri.parse(
-  //           'https://typescript-al0m.onrender.com/api/user/update-profile'),
-  //       headers: {'Authorization': 'Bearer $Token'},
-  //       body: jsonEncode({
-  //         'email': name,
-  //       }));
-
-  //   if (response.statusCode == 200) {
-  //     log("updateed");
-  //     log(response.body);
-  //     //return GetProfile.fromJson(jsonDecode(response.body));
-  //   } else {
-  //     throw Exception('Failed to load profile');
-  //   }
-  // }
-  Future<void> fetchProfile(String name) async {
+  Future<void> login(String Name) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
+
     if (token == null) {
       throw Exception('Token not found');
     }
-
-    final Uri uri = Uri.parse(
-        'https://typescript-al0m.onrender.com/api/user/update-profile');
-    final Map<String, String> headers = {'Authorization': 'Bearer $token'};
-    final Map<String, dynamic> bodyData = {'email': name};
-
     try {
-      final response = await http.put(
-        uri,
-        headers: headers,
-        body: jsonEncode(bodyData),
+      http.Response response = await http.put(
+        Uri.parse(
+            'https://typescript-al0m.onrender.com/api/user/update-profile'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'name': Name,
+        }),
       );
 
-      if (response.statusCode == 200) {
-        print('Profile updated successfully');
-        print(response.body);
+      log(response.statusCode.toString());
+
+      log(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('profile Updateee!!');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('profile Updateee!!'),
+          ),
+        );
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const GetProfileScreen(),
+            ),
+            (route) => false);
       } else {
-        throw Exception('Failed to update profile: ${response.reasonPhrase}');
+        log('Fail!');
       }
-    } catch (error) {
-      print('Error updating profile: $error');
-      throw Exception('Failed to update profile: $error');
+    } catch (e) {
+      log(e.toString());
     }
   }
 
@@ -82,19 +76,20 @@ class _UpdateProfileState extends State<UpdateProfile> {
           children: [
             TextField(
               controller: nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter a search term',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             ElevatedButton(
-                onPressed: () {
-                  fetchProfile(nameController.text);
-                },
-                child: Text("Update"))
+              onPressed: () {
+                login(nameController.text);
+              },
+              child: const Text("Update"),
+            ),
           ],
         ),
       ),
