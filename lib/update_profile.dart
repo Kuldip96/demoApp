@@ -43,8 +43,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
       );
 
       log(response.statusCode.toString());
+      log("bodyyyy ${response.body}");
 
-      log(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         log('profile Updateee!!');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -58,6 +58,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
               builder: (context) => const GetProfileScreen(),
             ),
             (route) => false);
+        // Navigator.pop(context);
       } else {
         log('Fail!');
       }

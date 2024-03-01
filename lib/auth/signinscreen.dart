@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:demo_app/apicall.dart';
 import 'package:demo_app/auth/signupscreen.dart';
+import 'package:demo_app/getprofile.dart';
 import 'package:demo_app/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -99,15 +100,17 @@ class _SignInScreenState extends State<SignInScreen> {
         prefs.setString('token', data['token']);
         final Token = prefs.getString('token');
         log('login!!');
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => EmployeeList()),
-            (route) => false);
+        if (Token != "") {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const GetProfileScreen()),
+              (route) => false);
+        }
       } else {
         log('Fail!');
       }
     } catch (e) {
-      log(e.toString());
+      log("iji");
     }
   }
 

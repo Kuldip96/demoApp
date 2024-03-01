@@ -11,11 +11,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String? token;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  token = prefs.getString('token').toString();
+
+  print("Token ${token}");
   runApp(const MyApp());
 }
 
@@ -28,19 +33,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
-    gettoken();
-    super.initState();
-  }
-
-  String token = "";
-  Future<void> gettoken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token').toString();
-    print("Token ${token}");
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -49,7 +41,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: token != null ? GetProfileScreen() : const SignInScreen(),
+      home: token != null ? const GetProfileScreen() : const SignInScreen(),
       //home: EmployeeList(),
     );
   }
