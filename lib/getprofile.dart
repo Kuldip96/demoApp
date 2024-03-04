@@ -1,8 +1,5 @@
 import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_app/Models/profile_get.dart';
-import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/update_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

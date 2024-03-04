@@ -1,6 +1,6 @@
-import 'dart:convert';
-import 'dart:developer';
+// ignore_for_file: must_be_immutable
 
+import 'dart:convert';
 import 'package:demo_app/Models/show_product_model.dart';
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/utils/comman/comman_text.dart';
@@ -8,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   String? token1;
@@ -54,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: data.length ?? 1,
+        itemCount: data.length ,
         itemBuilder: (context, index) {
           final item = data[index];
           return ListTile(

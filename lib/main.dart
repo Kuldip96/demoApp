@@ -1,12 +1,6 @@
-import 'dart:developer';
-
-import 'package:demo_app/api.dart';
-import 'package:demo_app/apicall.dart';
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/firebase_options.dart';
 import 'package:demo_app/getprofile.dart';
-import 'package:demo_app/view/home/home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
