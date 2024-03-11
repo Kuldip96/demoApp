@@ -1,8 +1,10 @@
 import 'dart:developer';
 import 'package:demo_app/Models/profile_get.dart';
+import 'package:demo_app/controller/profile_controller.dart';
 import 'package:demo_app/update_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -16,38 +18,35 @@ class GetProfileScreen extends StatefulWidget {
 }
 
 class _GetProfileScreenState extends State<GetProfileScreen> {
+  var profileController = Get.put(ProfileController());
   Future<GetProfile>? futureProfile;
   String? Token;
   String? name;
   @override
   void initState() {
-    futureProfile = fetchProfile();
+    // futureProfile = fetchProfile();
     super.initState();
   }
 
-  _getRequests() async {
-    setState(() {});
-  }
+  // Future<GetProfile> fetchProfile() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   Token = prefs.getString('token');
 
-  Future<GetProfile> fetchProfile() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    Token = prefs.getString('token');
-
-    log(Token.toString());
-    final response = await http.get(
-      Uri.parse('https://typescript-al0m.onrender.com/api/user/get-profile'),
-      headers: {'Authorization': 'Bearer $Token'},
-    );
-    final data = jsonDecode(response.body);
-    name = data['name'];
-    log(name.toString());
-    if (response.statusCode == 200) {
-      log(response.body);
-      return GetProfile.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to load profile');
-    }
-  }
+  //   log(Token.toString());
+  //   final response = await http.get(
+  //     Uri.parse('https://typescript-al0m.onrender.com/api/user/get-profile'),
+  //     headers: {'Authorization': 'Bearer $Token'},
+  //   );
+  //   final data = jsonDecode(response.body);
+  //   name = data['name'];
+  //   log(name.toString());
+  //   if (response.statusCode == 200) {
+  //     log(response.body);
+  //     return GetProfile.fromJson(jsonDecode(response.body));
+  //   } else {
+  //     throw Exception('Failed to load profile');
+  //   }
+  // }
 
   // Future<void> delateProfile() async {
   //   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -88,45 +87,47 @@ class _GetProfileScreenState extends State<GetProfileScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Center(
-              child: FutureBuilder<GetProfile>(
-                future: fetchProfile(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListTile(
-                      title: Text(snapshot.data?.name.toString() ?? ""),
-                      subtitle: Text(snapshot.data?.email.toString() ?? ""),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-                  return const CircularProgressIndicator();
-                },
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UpdateProfile(
-                      name: name!,
+        child: Obx(() {
+          if (profileController.isLoading.value) {
+            return CircularProgressIndicator();
+          }
+          return Column(
+            children: [
+              Center(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: profileController.userProfile.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(
+                                profileController.userProfile[index].name ??
+                                    "kuldip"),
+                          ),
+                        );
+                      })),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UpdateProfile(
+                        name: name!,
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: const Text("Update Profile"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                signInGooglr();
-              },
-              child: const Text('Google'),
-            ),
-          ],
-        ),
+                  );
+                },
+                child: const Text("Update Profile"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  signInGooglr();
+                },
+                child: const Text('Google'),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }

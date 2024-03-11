@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: data.length ,
+        itemCount: data.length,
         itemBuilder: (context, index) {
           final item = data[index];
           return ListTile(
