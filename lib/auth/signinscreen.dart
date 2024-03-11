@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:demo_app/apicall.dart';
 import 'package:demo_app/auth/signupscreen.dart';
 import 'package:demo_app/getprofile.dart';
-import 'package:demo_app/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
