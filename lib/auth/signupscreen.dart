@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:demo_app/auth/signinscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -37,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       log(response.statusCode.toString());
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-       // var data = jsonDecode(response.body);
+        // var data = jsonDecode(response.body);
         log('Sign in!');
         Navigator.pushAndRemoveUntil(
             context,
@@ -51,30 +52,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  // void creatAccount() async {
-  //   String email = emailController.text.trim();
-  //   String passwor = password.text.trim();
-  //   String cpasswor = cpassword.text.trim();
+  void creatAccount() async {
+    String email = emailController.text.trim();
+    String passwor = password.text.trim();
+    String cpasswor = cpassword.text.trim();
 
-  //   if (email == '' || passwor == '' || cpasswor == '') {
-  //     log('Please fill in the detail');
-  //   } else {
-  //     if (passwor != cpasswor) {
-  //       log('Passwords do not match');
-  //     } else {
-  //       try {
-  //         UserCredential userCredential = await FirebaseAuth.instance
-  //             .createUserWithEmailAndPassword(email: email, password: passwor);
-  //         log('user created');
-  //         if (userCredential.user != null) {
-  //           Navigator.pop(context);
-  //         }
-  //       } on FirebaseAuthException catch (e) {
-  //         log(e.code.toString());
-  //       }
-  //     }
-  //   }
-  // }
+    if (email == '' || passwor == '' || cpasswor == '') {
+      log('Please fill in the detail');
+    } else {
+      if (passwor != cpasswor) {
+        log('Passwords do not match');
+      } else {
+        try {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: passwor);
+          log('user created');
+          if (userCredential.user != null) {
+            Navigator.pop(context);
+          }
+        } on FirebaseAuthException catch (e) {
+          log(e.code.toString());
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +119,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              // creatAccount();
-              login(emailController.text, password.text, nameContoll.text);
+              creatAccount();
+              //login(emailController.text, password.text, nameContoll.text);
             },
             child: const Text('Sign Up'),
           ),
