@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +13,7 @@ class _StorageScreenState extends State<StorageScreen> {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController emailcontroller = TextEditingController();
 
-  void svaeUser() {
+  void saveUser() {
     String name = namecontroller.text.trim();
     String email = emailcontroller.text.trim();
     if (name != "" && email != "") {
@@ -49,7 +48,7 @@ class _StorageScreenState extends State<StorageScreen> {
             ),
             TextButton(
               onPressed: () {
-                svaeUser();
+                saveUser();
               },
               child: const Text('Save'),
             ),
@@ -78,7 +77,7 @@ class _StorageScreenState extends State<StorageScreen> {
                       ),
                     );
                   } else {
-                    return const Text("No Data");
+                    return const Text("No Data ");
                   }
                 } else {
                   return const Center(
