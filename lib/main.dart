@@ -43,8 +43,8 @@ class _MyAppState extends State<MyApp> {
       ),
       //home: token != null ? const StorageScreen() : const SignInScreen(),
       home: FirebaseAuth.instance.currentUser != null
-          ? StorageScreen()
-          : SignInScreen(),
+          ? const StorageScreen()
+          : const SignInScreen(),
       //home: EmployeeList(),
     );
   }
