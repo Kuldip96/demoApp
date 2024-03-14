@@ -1,6 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class StorageScreen extends StatefulWidget {
   const StorageScreen({super.key});
@@ -12,17 +17,33 @@ class StorageScreen extends StatefulWidget {
 class _StorageScreenState extends State<StorageScreen> {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController emailcontroller = TextEditingController();
+  TextEditingController agecontroller = TextEditingController();
 
-  void saveUser() {
+  void saveUser() async {
     String name = namecontroller.text.trim();
     String email = emailcontroller.text.trim();
-    if (name != "" && email != "") {
+    String age = agecontroller.text.trim();
+    int agee = int.parse(age);
+    if (name != "" && email != "" && profilePic != null) {
+      UploadTask uploadtask = FirebaseStorage.instance
+          .ref()
+          .child('profilePictures')
+          .child(const Uuid().v1())
+          .putFile(profilePic!);
+      TaskSnapshot taskSnapshot = await uploadtask;
+      String downloadurl = await taskSnapshot.ref.getDownloadURL();
       Map<String, dynamic> userdata = {
         "name": name,
         "email": email,
+        "profilepic": downloadurl,
+        "age": agee,
       };
       namecontroller.clear();
       emailcontroller.clear();
+      agecontroller.clear();
+      setState(() {
+        profilePic = null;
+      });
       FirebaseFirestore.instance.collection("users").add(userdata);
       log("User created!");
     } else {
@@ -30,6 +51,7 @@ class _StorageScreenState extends State<StorageScreen> {
     }
   }
 
+  File? profilePic;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,11 +62,38 @@ class _StorageScreenState extends State<StorageScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            CupertinoButton(
+              onPressed: () async {
+                XFile? selectImage =
+                    await ImagePicker().pickImage(source: ImageSource.gallery);
+                if (selectImage != null) {
+                  log('Image Selected!');
+                  File connvertFile = File(selectImage.path);
+                  setState(() {
+                    profilePic = connvertFile;
+                  });
+                } else {
+                  log("No Image Selected!");
+                }
+              },
+              padding: EdgeInsets.zero,
+              child: CircleAvatar(
+                backgroundImage:
+                    profilePic != null ? FileImage(profilePic!) : null,
+                radius: 50,
+              ),
+            ),
             TextField(
               controller: namecontroller,
+              decoration: const InputDecoration(hintText: 'Name'),
             ),
             TextField(
               controller: emailcontroller,
+              decoration: const InputDecoration(hintText: 'Email'),
+            ),
+            TextField(
+              controller: agecontroller,
+              decoration: const InputDecoration(hintText: 'Age'),
             ),
             TextButton(
               onPressed: () {
@@ -66,12 +115,17 @@ class _StorageScreenState extends State<StorageScreen> {
                               snapshot.data!.docs[index].data()
                                   as Map<String, dynamic>;
                           return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(userdata['profilepic']),
+                            ),
                             title: Text(
                               userdata["name"],
                             ),
                             subtitle: Text(
                               userdata["email"],
                             ),
+                            trailing: Text(userdata['age'].toString()),
                           );
                         },
                       ),
