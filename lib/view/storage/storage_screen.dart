@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,8 +31,16 @@ class _StorageScreenState extends State<StorageScreen> {
           .child('profilePictures')
           .child(const Uuid().v1())
           .putFile(profilePic!);
+
+      StreamSubscription tasksubscription =
+          uploadtask.snapshotEvents.listen((event) {
+        double percentage = event.bytesTransferred / event.totalBytes * 100;
+        log(percentage.toString());
+      });
+
       TaskSnapshot taskSnapshot = await uploadtask;
       String downloadurl = await taskSnapshot.ref.getDownloadURL();
+      tasksubscription.cancel();
       Map<String, dynamic> userdata = {
         "name": name,
         "email": email,
