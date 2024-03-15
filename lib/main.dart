@@ -1,6 +1,7 @@
 import 'package:demo_app/auth/signinscreen.dart';
 import 'package:demo_app/firebase_options.dart';
 import 'package:demo_app/getprofile.dart';
+import 'package:demo_app/service/notification_service.dart';
 import 'package:demo_app/view/home/home_screen.dart';
 import 'package:demo_app/view/storage/storage_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +17,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService.initialize();
   await GetStorage.init();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   token = prefs.getString('token');

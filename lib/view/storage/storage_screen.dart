@@ -72,6 +72,7 @@ class _StorageScreenState extends State<StorageScreen> {
         child: Column(
           children: [
             CupertinoButton(
+              padding: EdgeInsets.zero,
               onPressed: () async {
                 XFile? selectImage =
                     await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -85,11 +86,26 @@ class _StorageScreenState extends State<StorageScreen> {
                   log("No Image Selected!");
                 }
               },
-              padding: EdgeInsets.zero,
-              child: CircleAvatar(
-                backgroundImage:
-                    profilePic != null ? FileImage(profilePic!) : null,
-                radius: 50,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundImage:
+                        profilePic != null ? FileImage(profilePic!) : null,
+                    radius: 50,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 80, top: 50),
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.pink,
+                      child: Icon(
+                        Icons.edit,
+                        size: 15,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             TextField(
