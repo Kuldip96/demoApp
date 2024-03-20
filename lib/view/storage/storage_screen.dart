@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demo_app/view/storage/storage_detail.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
@@ -124,6 +126,7 @@ class _StorageScreenState extends State<StorageScreen> {
               onPressed: () {
                 saveUser();
               },
+               
               child: const Text('Save'),
             ),
             StreamBuilder<QuerySnapshot>(
@@ -139,18 +142,28 @@ class _StorageScreenState extends State<StorageScreen> {
                           Map<String, dynamic> userdata =
                               snapshot.data!.docs[index].data()
                                   as Map<String, dynamic>;
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(userdata['profilepic']),
+                          return InkWell(
+                            onTap: () {
+                              Get.to(StorageDetail(
+                                userdata: snapshot.data!.docs[index].data()
+                                    as Map<String, dynamic>,
+                              ));
+                            },
+                            child: Card(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(userdata['profilepic']),
+                                ),
+                                title: Text(
+                                  userdata["name"],
+                                ),
+                                subtitle: Text(
+                                  userdata["email"],
+                                ),
+                                trailing: Text(userdata['age'].toString()),
+                              ),
                             ),
-                            title: Text(
-                              userdata["name"],
-                            ),
-                            subtitle: Text(
-                              userdata["email"],
-                            ),
-                            trailing: Text(userdata['age'].toString()),
                           );
                         },
                       ),

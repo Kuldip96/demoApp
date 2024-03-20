@@ -18,7 +18,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await NotificationService.initialize();
+
   await GetStorage.init();
+  
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   token = prefs.getString('token');
 
