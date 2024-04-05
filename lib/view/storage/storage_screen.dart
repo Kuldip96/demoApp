@@ -126,7 +126,6 @@ class _StorageScreenState extends State<StorageScreen> {
               onPressed: () {
                 saveUser();
               },
-               
               child: const Text('Save'),
             ),
             StreamBuilder<QuerySnapshot>(
